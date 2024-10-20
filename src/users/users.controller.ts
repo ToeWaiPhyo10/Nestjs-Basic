@@ -18,10 +18,11 @@ import { UpdateUserDto } from './dto/UpdateUser.dto';
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
   @Post()
   @UsePipes(new ValidationPipe())
   createUser(@Body() createUserDto: CreateUserDto) {
-    console.log('c', createUserDto);
+    console.log(createUserDto);
     return this.usersService.createUser(createUserDto);
   }
 
@@ -30,6 +31,7 @@ export class UsersController {
     return this.usersService.getUsers();
   }
 
+  // users/:id
   @Get(':id')
   async getUserById(@Param('id') id: string) {
     const isValid = mongoose.Types.ObjectId.isValid(id);
@@ -43,20 +45,21 @@ export class UsersController {
   @UsePipes(new ValidationPipe())
   async updateUser(
     @Param('id') id: string,
-    @Body() updateUserdto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
   ) {
     const isValid = mongoose.Types.ObjectId.isValid(id);
-    if (!isValid) throw new HttpException('Invalid ID', 404);
-    const updatedUser = await this.usersService.updateUser(id, updateUserdto);
-    if (!updatedUser) throw new HttpException('User not found', 404);
+    if (!isValid) throw new HttpException('Invalid ID', 400);
+    const updatedUser = await this.usersService.updateUser(id, updateUserDto);
+    if (!updatedUser) throw new HttpException('User Not Found', 404);
     return updatedUser;
   }
+
   @Delete(':id')
   async deleteUser(@Param('id') id: string) {
     const isValid = mongoose.Types.ObjectId.isValid(id);
-    if (!isValid) throw new HttpException('Invalid ID', 404);
+    if (!isValid) throw new HttpException('Invalid ID', 400);
     const deletedUser = await this.usersService.deleteUser(id);
-    if (!deletedUser) throw new HttpException('User not found', 404);
+    if (!deletedUser) throw new HttpException('User Not Found', 404);
     return;
   }
 }
